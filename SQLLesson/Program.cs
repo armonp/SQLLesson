@@ -10,10 +10,41 @@ namespace SQLLesson {
             MajorController.bcConnection = sqllib;
 
             var majors = MajorController.GetAllMajors();
-            foreach(var major in majors) {
-                Console.WriteLine(major);
+            foreach(var m in majors) {
+                Console.WriteLine(m);
             }
+            var newMajor = new Major {
+                Id = 1000,
+                Description = "Computer Science",
+                MinSat = 1300
+            };
+            Console.WriteLine();
             
+            var success = MajorController.InsertMajor(newMajor);
+            majors = MajorController.GetAllMajors();
+            foreach (var m in majors) {
+                Console.WriteLine(m);
+            }
+            Console.WriteLine();
+            
+            newMajor.MinSat = 1200;
+            newMajor.Description = "Computer Engineering";
+            success = MajorController.UpdateMajor(newMajor);
+            majors = MajorController.GetAllMajors();
+            foreach (var m in majors) {
+                Console.WriteLine(m);
+            }
+
+            Console.WriteLine();
+            success = MajorController.DeleteMajor(newMajor);
+            majors = MajorController.GetAllMajors();
+            foreach (var m in majors) {
+                Console.WriteLine(m);
+            }
+
+
+            //var major = MajorController.GetMajorByPk(1);
+            //Console.WriteLine(major);
             //var newStudent = new Student {
             //    Id = 248,
             //    Firstname = "Crazy",
@@ -26,22 +57,22 @@ namespace SQLLesson {
             //var studentToDelete = new Student { Id = 824 };
             //var success = StudentController.DeleteStudent(999);
 
-            //var student = StudentController.GetStudentByPk(888);
+            //var student = StudentController.GetStudentByPk(777);
             //student.Firstname = "Crazy";
             //student.Lastname = "Eights";
             //if(student == null) {
             //    Console.WriteLine("Student not found");
             //} else { Console.WriteLine(student); }
-            
+
             //student.Firstname = "Charlie";
             //student.Lastname = "Chan";
-            //success = StudentController.UpdateStudent(student);
+            //var success = StudentController.UpdateStudent(student);
 
 
-            var students = StudentController.GetAllStudents();
-            foreach (var s in students) {
-                Console.WriteLine(s);
-            }
+            //var students = StudentController.GetAllStudents();
+            //foreach (var s in students) {
+            //    Console.WriteLine(s);
+            //}
 
             sqllib.Disconnect();
 

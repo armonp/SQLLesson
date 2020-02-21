@@ -8,7 +8,18 @@ namespace SqlLibrary {
 
         public static BcConnection bcConnection { get; set; }
 
-        public static List<Student> GetAllStudents() { //static method cannot access instance things
+        private static Student LoadStudentProps(SqlDataReader reader) {
+            var student = new Student(); //new instances created inside static method are accessible
+            student.Id = Convert.ToInt32(reader["Id"]); //data comes from database as Objects.
+            student.Firstname = reader["Firstname"].ToString();
+            student.Lastname = reader["Lastname"].ToString();
+            student.SAT = Convert.ToInt32(reader["SAT"]); //convert each piece to appropriate data type
+            student.GPA = Convert.ToDouble(reader["GPA"]);
+            student.MajorId = Convert.IsDBNull(reader["MajorId"]) ? (int?)null : Convert.ToInt32(reader["MajorId"]);
+            return student;
+        }
+
+        public static List<Student> GetAllStudents() { //static method cannot access instance things. Removed static modifier to put LoadStudentProps into method
             var sql = "SELECT * From Student s Left Join Major m on m.Id = s.MajorId"; //pass sql statement to
             var command = new SqlCommand(sql, bcConnection.Connection); //sqlcommand
             var reader = command.ExecuteReader(); //use ExecuteReader() to read data. ExecuteNonQuery() to update data
@@ -20,13 +31,14 @@ namespace SqlLibrary {
             }
             var students = new List<Student>();
             while (reader.Read()) {
-                var student = new Student(); //new instances created inside static method are accessible
-                student.Id = Convert.ToInt32(reader["Id"]); //data comes from database as Objects.
-                student.Firstname = reader["Firstname"].ToString();
-                student.Lastname = reader["Lastname"].ToString();
-                student.SAT = Convert.ToInt32(reader["SAT"]); //convert each piece to appropriate data type
-                student.GPA = Convert.ToDouble(reader["GPA"]);
-                //student.MajorId = Convert.ToInt32(reader["MajorId"]);
+                var student = LoadStudentProps(reader);
+                //var student = new Student(); //new instances created inside static method are accessible
+                //student.Id = Convert.ToInt32(reader["Id"]); //data comes from database as Objects.
+                //student.Firstname = reader["Firstname"].ToString();
+                //student.Lastname = reader["Lastname"].ToString();
+                //student.SAT = Convert.ToInt32(reader["SAT"]); //convert each piece to appropriate data type
+                //student.GPA = Convert.ToDouble(reader["GPA"]);
+                ////student.MajorId = Convert.ToInt32(reader["MajorId"]);
                 if(Convert.IsDBNull(reader["Description"])) {
                     student.Major = null;
                 } else {
@@ -53,12 +65,13 @@ namespace SqlLibrary {
                 return null; 
             }
             reader.Read();
-            var student = new Student(); //new instances created inside static method are accessible
-            student.Id = Convert.ToInt32(reader["Id"]); //data comes from database as Objects.
-            student.Firstname = reader["Firstname"].ToString();
-            student.Lastname = reader["Lastname"].ToString();
-            student.SAT = Convert.ToInt32(reader["SAT"]); //convert each piece to appropriate data type
-            student.GPA = Convert.ToDouble(reader["GPA"]);
+            var student = LoadStudentProps(reader);
+            //var student = new Student(); //new instances created inside static method are accessible
+            //student.Id = Convert.ToInt32(reader["Id"]); //data comes from database as Objects.
+            //student.Firstname = reader["Firstname"].ToString();
+            //student.Lastname = reader["Lastname"].ToString();
+            //student.SAT = Convert.ToInt32(reader["SAT"]); //convert each piece to appropriate data type
+            //student.GPA = Convert.ToDouble(reader["GPA"]);
             //student.MajorId = Convert.ToInt32(reader["MajorId"]);
             reader.Close();
             reader = null;
@@ -123,7 +136,7 @@ namespace SqlLibrary {
             return true;
         }
         
-        public static bool DeleteStudent(int id) {
+        public bool DeleteStudent(int id) {
             var student = GetStudentByPk(id);
             if(student == null) {
                 return false;
